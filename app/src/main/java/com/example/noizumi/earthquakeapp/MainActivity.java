@@ -16,6 +16,8 @@ import android.view.View;
 import android.widget.AdapterView;
 import android.widget.ListView;
 import java.util.ArrayList;
+import java.util.List;
+
 import org.apache.http.Header;
 
 import io.realm.Realm;
@@ -134,8 +136,15 @@ public class MainActivity extends AppCompatActivity {
                 rssFeed.getTitle();
                 rssFeed.getDescription();
 
-                RssItem rssItem = rssFeed.getRssItems().get(0);
-                rssItem.getTitle();
+//                RssItem rssItem = rssFeed.getRssItems().get(0);
+                List<RssItem> rssItems = rssFeed.getRssItems();
+
+                for (int i = 0; i < rssItems.size(); i++) {
+                    RssItem rssItem = rssItems.get(i);
+
+                    Log.d("javatest",rssItem.getTitle());
+                }
+                Log.d("javatest",String.valueOf(rssItems.size()));
             }
 
             @Override
