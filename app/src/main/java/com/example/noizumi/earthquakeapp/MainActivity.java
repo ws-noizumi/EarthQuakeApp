@@ -16,7 +16,6 @@ import android.view.View;
 import android.widget.AdapterView;
 import android.widget.ListView;
 import java.util.ArrayList;
-import java.util.List;
 
 import org.apache.http.Header;
 
@@ -27,7 +26,6 @@ import io.realm.Sort;
 import rejasupotaro.asyncrssclient.AsyncRssClient;
 import rejasupotaro.asyncrssclient.AsyncRssResponseHandler;
 import rejasupotaro.asyncrssclient.RssFeed;
-import rejasupotaro.asyncrssclient.RssItem;
 
 public class MainActivity extends AppCompatActivity {
     public final static String EXTRA_TASK = "com.example.noizumi.taskapp.TASK";
@@ -45,6 +43,8 @@ public class MainActivity extends AppCompatActivity {
     };
     private ListView mListView;
     private TaskAdapter mTaskAdapter;
+    private RssSetDBThread rssSetDBThread;
+    private Thread RssSetDB;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -133,18 +133,10 @@ public class MainActivity extends AppCompatActivity {
         client.read("http://weather.livedoor.com/forecast/rss/earthquake.xml", new AsyncRssResponseHandler() {
             @Override
             public void onSuccess(RssFeed rssFeed) {
-                rssFeed.getTitle();
-                rssFeed.getDescription();
-
-//                RssItem rssItem = rssFeed.getRssItems().get(0);
-                List<RssItem> rssItems = rssFeed.getRssItems();
-
-                for (int i = 0; i < rssItems.size(); i++) {
-                    RssItem rssItem = rssItems.get(i);
-
-                    Log.d("javatest",rssItem.getTitle());
-                }
-                Log.d("javatest",String.valueOf(rssItems.size()));
+                rssSetDBThread = new RssSetDBThread(rssFeed);
+                RssSetDB = new Thread(rssSetDBThread);
+                RssSetDB.start();
+                Log.d("javatest","Thread Start");
             }
 
             @Override
@@ -168,7 +160,7 @@ public class MainActivity extends AppCompatActivity {
         if(subTitle.equals("")){
             mTaskRealmResults = mRealm.where(Task.class).findAll();
         }else{
-            mTaskRealmResults = mRealm.where(Task.class).equalTo("category",subTitle).findAll();
+            mTaskRealmResults = mRealm.where(Task.class).contains("title",subTitle).findAll();
         }
 
         mTaskRealmResults.sort("date", Sort.DESCENDING);
@@ -254,7 +246,7 @@ public class MainActivity extends AppCompatActivity {
         searchView.setSubmitButtonEnabled(false);
 
         // SearchViewに何も入力していない時のテキストを設定
-        searchView.setQueryHint("カテゴリ検索");
+        searchView.setQueryHint("キーワード検索");
 
         // リスナーを登録する
         searchView.setOnQueryTextListener(mOnQueryTextListener);
