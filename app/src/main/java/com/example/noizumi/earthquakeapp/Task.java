@@ -1,5 +1,7 @@
 package com.example.noizumi.earthquakeapp;
 
+import android.net.Uri;
+
 import java.io.Serializable;
 import java.util.Date;
 
@@ -14,6 +16,7 @@ public class Task extends RealmObject implements Serializable {
     private String contents; // 内容
     private Date date; // 日時
     private String category;    // カテゴリ
+    private String link;
 
     // id をプライマリーキーとして設定
     @PrimaryKey
@@ -57,5 +60,11 @@ public class Task extends RealmObject implements Serializable {
 
     public void setCategory(String category) {
         this.category = category;
+    }
+    void setLink(String link) {
+        this.link = link;
+    }
+    public String getLink() {
+        return this.link;
     }
 }

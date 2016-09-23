@@ -62,6 +62,7 @@ public class RssSetDBThread implements Runnable {
                     task.setContents(rssItem.getDescription());
                     task.setCategory("地震速報");
                     task.setDate(date);
+                    task.setLink(rssItem.getLink().toString());
 
                     realm.beginTransaction();
                     realm.copyToRealmOrUpdate(task);

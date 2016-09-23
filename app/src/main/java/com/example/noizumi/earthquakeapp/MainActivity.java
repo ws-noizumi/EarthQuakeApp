@@ -2,6 +2,7 @@ package com.example.noizumi.earthquakeapp;
 
 import android.content.DialogInterface;
 import android.content.Intent;
+import android.net.Uri;
 import android.os.Bundle;
 import android.support.design.widget.FloatingActionButton;
 import android.support.v4.view.MenuItemCompat;
@@ -83,13 +84,18 @@ public class MainActivity extends AppCompatActivity {
         mListView.setOnItemClickListener(new AdapterView.OnItemClickListener() {
             @Override
             public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
-                // 入力・編集する画面に遷移させる
+                // リストアイテムから疑似的に合成された Task データを取得(linkなし)
                 Task task = (Task) parent.getAdapter().getItem(position);
 
-                Intent intent = new Intent(MainActivity.this, InputActivity.class);
-                intent.putExtra(EXTRA_TASK, task);
+                // 条件に合致する完全データを取得(linkあり)
+                task = mRealm.where(Task.class).equalTo("date", task.getDate()).findFirst();
 
-                startActivity(intent);
+                // ブラウザに飛ばす
+                if(task.getLink() != null) {
+                    Uri uri = Uri.parse(task.getLink());
+                    Intent intent = new Intent(Intent.ACTION_VIEW, uri);
+                    startActivity(intent);
+                }
             }
         });
 
